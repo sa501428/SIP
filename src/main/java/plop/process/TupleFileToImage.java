@@ -3,10 +3,24 @@ package plop.process;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
+import javastraw.reader.Dataset;
+import javastraw.reader.Matrix;
+import javastraw.reader.basics.Chromosome;
+import javastraw.reader.block.Block;
+import javastraw.reader.block.ContactRecord;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.norm.NormalizationPicker;
+import javastraw.reader.type.HiCZoom;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.HiCFileTools;
+import plop.runfromhic.StrawRunner;
 
 
 /**
@@ -121,14 +135,7 @@ public class TupleFileToImage {
 		}
 		_avg = sum/_noZeroPixel;
 		_std = std(_avg,img);
-		for(int i = 0; i < ip.getWidth(); ++i){
-			for(int j = 0; j < ip.getWidth(); ++j){
-				float a = ip.getf(i, j);
-				if (Math.abs(j-i) <= 2 && a >= _avg+_std*2)
-					ip.setf(i,j,_avg);
-			}
-		}
-		img.setProcessor(ip);
+		StrawRunner.retainSpecificValues(img, ip, _avg, _std);
 	}
 	
 	/**
